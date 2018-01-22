@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<input type="text" id="dim" name="dim" placeholder="dimansion">
+<input type="text" id="number" name="number" placeholder="number">
+<button id="go">Go</button>
+<button id="_test">_test</button>
+<div id="output"></div>
+<script type="text/javascript" src="js/aLib.js"></script>
+<script type = "text/javascript">
+window.addEventListener("DOMContentLoaded", ready);
+function ready() {
+    var dim = document.getElementById('dim'),
+        number = document.getElementById('number'),
+        // direction = document.getElementById('direction'),
+        go = document.getElementById('go'),
+        output = document.getElementById('output'),
+        _test = document.getElementById('_test');
+    var trigger = true;
+    // var dim = document.querySelector('#dim'),
+    //  number = document.querySelector('#number'),
+    //  direction = document.querySelector('#direction'),
+    //  go = document.querySelector('go');
+    var arr = [],
+        emptyI,
+        emptyJ,
+        emptyField,
+        dimV;
+    go.addEventListener("click", action, false);
+    _test.addEventListener("click", _testFoo, false);
+
+    function _testFoo() {
+        for (var i = 1; i < dimV * dimV; i++) {
+            number.value = i;
+            move();
+            console.log(i)
+        }
+    }
+
+    function action() {
+        if (trigger) {
+            firstDraw();
+        } else move()
+            // search(parseInt(number.value), arr);
+    }
+
+    function firstDraw() {
+        dimV = parseInt(dim.value)
+        arr = init(dimV);
+        draw(arr);
+        initEmpty();
+        trigger = false;
+        // return arr;
+    }
+
+    function initEmpty() {
+        emptyI = arr.length - 1,
+            emptyJ = arr.length - 1,
+            emptyField = arr[emptyI][emptyJ];
+    }
+
+    function move() {
+        var temp,
+            numberParse = parseInt(number.value),
+            s = searchValue(numberParse, arr);
+        console.log(s, "<==S N==>", numberParse);
+        if ((s[0] == emptyI && s[1] == emptyJ + 1) || (s[0] == emptyI && s[1] == emptyJ - 1) || //TODO foo of BULL condition
+            (s[0] == emptyI - 1 && s[1] == emptyJ) || (s[0] == emptyI + 1 && s[1] == emptyJ)) {
+            temp = arr[s[0]][s[1]]; //TODO switch 2D arr foo
+            arr[s[0]][s[1]] = arr[emptyI][emptyJ];
+            arr[emptyI][emptyJ] = temp;
+            emptyI = s[0];
+            emptyJ = s[1];
+            clearField(output);
+            draw(arr);
+        }
+    }
+
+    function clearField(target) {
+        target.innerHTML = "";
+    }
+
+    function searchValue(val, arr) {
+        var i, j, targetI, targetJ;
+        for (i = 0; i < arr.length; i++) {
+            for (j = 0; j < arr.length; j++) {
+                if (parseInt(arr[i][j]) == val) {
+                    targetI = i;
+                    targetJ = j;
+                }
+            }
+        }
+        return [targetI, targetJ];
+    }
+
+    function init(d) {
+        var i,
+            j,
+            arr = [],
+            maxNumber = d * d - 1;
+        // console.log(maxNumber);
+        for (i = 0; i < d; i++) {
+            arr[i] = new Array();
+            for (j = 0; j < d; j++) {
+                arr[i][j] = maxNumber;
+                maxNumber--;
+            }
+        }
+        arr[d - 1][d - 1] = " _ ";
+        if (((d * d - 1) % 2) != 0) { //TODO function swap for 2D array
+            var temp = arr[d - 1][d - 2];
+            arr[d - 1][d - 2] = arr[d - 1][d - 3];
+            arr[d - 1][d - 3] = temp;
+        }
+        return arr;
+    }
+
+    function draw(arr) {
+        var i, j;
+        for (i = 0; i < arr.length; i++) {
+            for (j = 0; j < arr.length; j++) {
+                if (arr[i][j] < 10) {
+                    if (trigger) {
+                        arr[i][j] = " " + arr[i][j] + " |";
+                    } else arr[i][j] = arr[i][j];
+                } else if (trigger) {
+                    arr[i][j] += "|";
+                }
+                output.innerHTML += arr[i][j];
+            }
+            output.innerHTML += "<br>";
+        }
+    }
+}
+
+</script>
+</body>
+</html>

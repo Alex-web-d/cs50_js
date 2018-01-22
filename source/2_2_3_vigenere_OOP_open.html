@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vigenere OOP open</title>
+	<style type="text/css">
+	#in1_test, #result_test{
+		width: 500px;
+		height: 100px;
+		margin-bottom: 10px;
+	}
+</style>
+</head>
+<body>
+	<textarea id="in1_test" placeholder="input text heare"></textarea>
+	<input type="text" name="in2_name" id="in2_test" placeholder="input key heare">
+	<input type="button" name="btn1_name" id="btn1_test" value="vigenere">
+	<input type="button" name="btn2_name" id="btn2_test" value="caesar">
+	<input type="button" name="btn3_name"  id="btn3_test" value="decryptVigenere">
+	<input type="button" name="btn4_name"  id="btn4_test" value="decryptCaesar" >
+	<div id="result_test">MAIN</div>
+	<div id="testID1"></div>
+	<script type="text/javascript">
+		//module pattern main Obj
+		var App = App || {};
+		App.define = function (namespace) {
+			var parts = namespace.split("."),
+			parent = App,
+			i;
+			if (parts[0] == "App") {
+				parts = parts.slice(1);
+			}
+			for (i = 0; i < parts.length; i++) {
+				if (typeof parent[parts[i]] == "undefined") {
+					parent[parts[i]] = {};
+				}
+				parent = parent[parts[i]];
+			}
+			return parent;
+		}
+
+		// get IDs
+		App.define("getDirectID");
+		App.getDirectID = (function(){
+			var in1 = document.getElementById("in1_test"),
+			in2 = document.getElementById("in2_test"),
+			btn1 = document.getElementById("btn1_test"),
+			btn2 = document.getElementById("btn2_test"),
+			result = document.getElementById("result_test"),
+			btnDecryptVigenere = document.getElementById("btn3_test"),
+			btnDecryptCaesar = document.getElementById("btn4_test");
+			return {
+				in1,
+				in2,
+				btn1,
+				result,
+				btn2,
+				btnDecryptVigenere,
+				btnDecryptCaesar
+			}
+		}());
+
+		// _privat test function for replace getElementByID
+		App.define("util");
+		App.util = (function(){
+			var _visibilityTrigger = -1;
+
+			function privatFoo(eventStr, object, foo){
+				object.addEventListener(eventStr, foo)
+			}
+				// show-hide function
+				function changeVisibility(id){
+					if (App.util._visibilityTrigger == -1) {
+						id.style.display = "none";
+					}
+					else {
+						id.style.display = "block";
+					}
+				}
+				return{
+					_visibilityTrigger:_visibilityTrigger,
+					_boundEvent: privatFoo,
+					_changeVisibility:changeVisibility
+				}
+			}());
+
+		// vigenere encryption main function
+		App.define("util.vigenere");
+		App.util.vigenere = (function() {
+			function privateFoo(){
+				var str1 = App.getDirectID.in1.value,
+				key = App.getDirectID.in2.value;
+				var resultKeyArray = App.util.vigenere.logick.calcKeyArray(key);
+				if (typeof resultKeyArray == "undefined" || resultKeyArray == -1 || resultKeyArray == "" ) {
+					App.getDirectID.result.innerHTML = "Wrong key for vigenere!";
+					return;
+				};
+				var resultEncryptedText = App.util.vigenere.logick.calcEncrypt(str1, resultKeyArray);
+				App.getDirectID.result.innerHTML = resultEncryptedText;
+				App.util._visibilityTrigger = 1;
+				App.util._changeVisibility(App.getDirectID.btnDecryptVigenere);
+			}
+			return {
+				foo: privateFoo
+			}
+		}());
+
+		// vigenere encryption logick
+		App.define("util.vigenere.logick");
+		App.util.vigenere.logick = (function(){
+			function privateCalcEncrypt(str1, resultKeyArray){
+				var i,
+				j,
+				helpVar,
+				resultString = "";
+				for (i = 0, j = 0; i < str1.length; i++, j++) {
+					if (str1[i].charCodeAt() > 64 && str1[i].charCodeAt() < 91 ) {
+						helpVar = (str1[i].charCodeAt()) + resultKeyArray[j];
+						if (j >= resultKeyArray.length - 1) { j = -1 };
+						if (helpVar < 91) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(65 + helpVar - 91);
+						}
+					}
+					else if  (str1[i].charCodeAt() > 96 && str1[i].charCodeAt() < 123 ) {
+						helpVar = (str1[i].charCodeAt()) + resultKeyArray[j];
+						if (j >= resultKeyArray.length - 1) { j = -1 };
+						if (helpVar < 123) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(97 + helpVar - 123);
+						}
+					}
+					else if (str1[i].charCodeAt() == 38 || str1[i].charCodeAt() == 60 || str1[i].charCodeAt() == 62){
+						--j;
+						resultString += String.fromCharCode(223);
+					}
+					else {
+						--j;
+						resultString += String.fromCharCode((str1[i].charCodeAt()))
+					};
+				}
+				return resultString;
+			}
+			function privateCalcKeyArray(k){
+				var j,
+				keyCharCode = [],
+				resultKeyArrayHelp = [],
+				helpVarArr;
+				for (j = 0; j < k.length; j++) {
+					keyCharCode[j] = k[j].charCodeAt();
+					if (keyCharCode[j] > 64 && keyCharCode[j] < 91 ) {
+						helpVarArr = (keyCharCode[j]) - 65;
+						resultKeyArrayHelp[j]= helpVarArr;
+					}
+					else if (keyCharCode[j] > 96 && keyCharCode[j] < 123 ) {
+						helpVarArr = (keyCharCode[j]) - 97;
+						resultKeyArrayHelp[j]= helpVarArr;
+					}
+					else {								
+						return -1;
+					}
+				}
+				return resultKeyArrayHelp;
+			}
+			return {
+				calcKeyArray: privateCalcKeyArray,
+				calcEncrypt: privateCalcEncrypt
+			}
+		}());
+
+			// vigenere decryption main function
+			App.define("util.decryptVigenere");
+			App.util.decryptVigenere = (function() {
+				function privateFoo(){
+					App.util._visibilityTrigger = -1;
+					App.util._changeVisibility(App.getDirectID.btnDecryptVigenere);
+					var str1 = App.getDirectID.result.innerHTML,
+					key = App.getDirectID.in2.value;
+					var resultKeyArray = App.util.vigenere.logick.calcKeyArray(key);
+					if (typeof resultKeyArray == "undefined" || resultKeyArray == -1) {
+						App.getDirectID.result.innerHTML = "Decryption error!";
+						return;
+					};
+					var resultEncryptedText = App.util.decryptVigenere.logick.calcEncrypt(str1, resultKeyArray);
+					App.getDirectID.result.innerHTML = resultEncryptedText;
+				}
+				return {
+					foo: privateFoo
+				}
+			}());
+
+		// vigenere decryption logick
+		App.define("util.decryptVigenere.logick");
+		App.util.decryptVigenere.logick = (function(){
+			function privateCalcEncrypt(str1, resultKeyArray){
+				var i,
+				j,
+				helpVar,
+				resultString = "";
+				console.log(str1);
+				for (i = 0, j = 0; i < str1.length; i++, j++) {
+					if (str1[i].charCodeAt() > 64 && str1[i].charCodeAt() < 91 ) {
+						helpVar = (str1[i].charCodeAt()) - resultKeyArray[j];
+						if (j >= resultKeyArray.length - 1 ) { j = -1 };
+						if (helpVar > 64) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(91 + helpVar - 65);
+						}
+					}
+					else if  (str1[i].charCodeAt() > 96 && str1[i].charCodeAt() < 123 ) {
+						helpVar = (str1[i].charCodeAt()) - resultKeyArray[j];
+						if (j >= resultKeyArray.length -1 ) { j = -1 };
+						if (helpVar > 96) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(123 + helpVar - 97);
+						}
+					}
+					else {
+						--j;
+						resultString += String.fromCharCode((str1[i].charCodeAt()));
+					};
+				}
+				return resultString;
+			}
+			return {
+				calcEncrypt: privateCalcEncrypt
+			}
+		}());
+
+		// caesar
+		App.define("util.caesar");
+		App.util.caesar = (function(){
+			function privateFoo(){
+				var i,
+				mainKey,
+				helpVar,
+				str1 = App.getDirectID.in1.value,
+				key = App.getDirectID.in2.value,
+				result = App.getDirectID.result,
+				arr1 = [],
+				resultString ="";
+				mainKey = (65 + key) % 26;
+				if (!parseInt(key, 10) || (parseInt(key, 10) < 0)) { //what is !parseInt()???
+					result.innerHTML = "Wrong key for caesar!";
+					return;
+				}
+				for (i = 0; i < str1.length; i++) {
+					if (str1[i].charCodeAt() > 64 && str1[i].charCodeAt() < 91 ) {
+						helpVar = (str1[i].charCodeAt())+mainKey;
+						if (helpVar < 91) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(65 + helpVar - 91);
+						}
+					}
+					else if  (str1[i].charCodeAt() > 96 && str1[i].charCodeAt() < 123 ) {
+						helpVar = (str1[i].charCodeAt())+mainKey;
+						if (helpVar < 123) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(97 + helpVar - 123);
+						}
+					}
+					else resultString += String.fromCharCode((str1[i].charCodeAt()));
+				}
+				result.innerHTML = resultString;
+				App.util._visibilityTrigger = 1;
+				App.util._changeVisibility(App.getDirectID.btnDecryptCaesar);
+			}
+			return {
+				foo:privateFoo
+			}
+		}());
+
+		// caesar decrypt
+		App.define("util.decryptCaesar");
+		App.util.decryptCaesar = (function(){
+			function privateFoo(){
+				var i,
+				mainKey,
+				helpVar,
+				str1 = App.getDirectID.result.innerHTML,
+				key = App.getDirectID.in2.value,
+				arr1 = [],
+				resultString ="";
+				mainKey = (65 + key) % 26;
+				if (!parseInt(key) || parseInt(key) < 0) {
+					result.innerHTML = "Wrong key for caesar!";
+					return;
+				}
+				for (i = 0; i < str1.length; i++) {
+					if (str1[i].charCodeAt() > 64 && str1[i].charCodeAt() < 91 ) {
+						helpVar = (str1[i].charCodeAt()) - mainKey;
+						if (helpVar > 64) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(91 + helpVar - 65);
+						}
+					}
+					else if  (str1[i].charCodeAt() > 96 && str1[i].charCodeAt() < 123) {
+						helpVar = (str1[i].charCodeAt()) - mainKey;
+						if (helpVar > 96) {
+							resultString += String.fromCharCode(helpVar);
+						}
+						else {
+							resultString += String.fromCharCode(123 + helpVar - 97);
+						}
+					}
+					else resultString += String.fromCharCode((str1[i].charCodeAt()));
+				}
+				App.getDirectID.result.innerHTML = resultString;
+				App.util._visibilityTrigger = -1;
+				App.util._changeVisibility(App.getDirectID.btnDecryptCaesar);
+			}
+			return {
+				foo:privateFoo
+			}
+		}());
+		App.define("init");
+		App.init = (function(){
+			// main program work
+			function foo(){
+				App.getDirectID.btn1.addEventListener("click", App.util.vigenere.foo);
+				App.getDirectID.btn2.addEventListener("click", App.util.caesar.foo);
+				// App.util._boundEvent("click", App.getDirectID.btn2, App.util.vigenere.foo);
+				App.getDirectID.btnDecryptVigenere.addEventListener("click", App.util.decryptVigenere.foo);
+				App.getDirectID.btnDecryptCaesar.addEventListener("click", App.util.decryptCaesar.foo);
+				App.util._changeVisibility(App.getDirectID.btnDecryptVigenere);
+				App.util._changeVisibility(App.getDirectID.btnDecryptCaesar);
+				console.log(App);
+			}
+			return{
+				main:foo
+			}
+		}());
+window.addEventListener("load", App); //TO DO
+window.addEventListener("load", App.init.main);
+</script>
+</body>
+</html>

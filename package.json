@@ -1,0 +1,27 @@
+{
+  "name": "study_oop",
+  "version": "1.0.0",
+  "description": "Study OOP, module opening pattern on the example of simple encryption algorithms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP.git"
+  },
+  "keywords": [
+    "OOP",
+    "module",
+    "opening",
+    "pattern",
+    "encryption",
+    "algorithm"
+  ],
+  "author": "AstonJack",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP/issues"
+  },
+  "homepage": "https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP#readme"
+}

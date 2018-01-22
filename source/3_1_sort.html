@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script type="text/javascript">
+		//module pattern main Obj
+		var App = App || {};
+		App.define = function(namespace) {
+		    var parts = namespace.split("."),
+		        parent = App,
+		        i;
+		    if (parts[0] == "App") {
+		        parts = parts.slice(1);
+		    }
+		    for (i = 0; i < parts.length; i++) {
+		        if (typeof parent[parts[i]] == "undefined") {
+		            parent[parts[i]] = {};
+		        }
+		        parent = parent[parts[i]];
+		    }
+		    return parent;
+		}
+		App.define("utils");
+		App.utils = (function() {
+		    function swap(a, x, y) {
+		        if (a.length === 1) {
+		            return a
+		        };
+		        a.splice(y, 1, a.splice(x, 1, a[y])[0]);
+		        return a;
+		    }
+
+		    function getRandom(min, max) {
+		        return Math.floor(Math.random() * (max - min + 1)) + min;
+		    }
+
+		    function arrayRandom(length, min, max) {
+		        var arr = [];
+		        for (var i = 0; i < length; i++) {
+		            arr[i] = App.utils.getRandom(min, max);
+		        }
+		        return arr
+		    }
+		    return {
+		        swap: swap,
+		        getRandom: getRandom,
+		        arrayRandom: arrayRandom
+		    }
+		}());
+		App.define("sortAlgorithms");
+		App.sortAlgorithms = (function() {
+		    var arrayConst = [3, 2, 5, 1, 8, 9, 7, 45, -4, 89, -455545, 105, 784, 425, -8454, -88, 122, 84, 4, -15, 854, 54444, -145, -44554, 484, 544, 84, 54, -58, 74, 7, 44, -4, 7, 41];
+		    // var arrayConst = [3,2,7,20,11,15];
+		    var constantRandomArr = App.utils.arrayRandom(50000, -50000, 50000);
+
+		    function sortChoice(arr) {
+		        var i, j, min, var1;
+		        for (i = 0; i < arr.length - 1; i++) {
+		            min = i;
+		            for (j = i + 1; j < arr.length; j++) {
+		                if (arr[j] < arr[min]) {
+		                    min = j;
+		                }
+		            }
+		            if (min != i) {
+		                App.utils.swap(arr, i, min);
+		            }
+		        }
+		        return arr
+		    }
+
+		    function sortBubble(arr) {
+		        var counter, j;
+		        for (counter = 1; counter > 0;) {
+		            counter = 0;
+		            for (j = 0; j < arr.length; j++) {
+		                if (arr[j] > arr[j + 1]) {
+		                    App.utils.swap(arr, j, j + 1);
+		                    counter++;
+		                }
+		            }
+		        }
+		        return arr;
+		    }
+
+		    function sortInsert(arr) {
+		        var i, j, element;
+		        for (i = 0; i < arr.length; i++) {
+		            element = arr[i];
+		            for (j = i; j > 0 && arr[j - 1] > element; j--) {
+		                arr[j] = arr[j - 1];
+		            }
+		            arr[j] = element;
+		        }
+		        return arr
+		    }
+		    //TO DO need to improve 
+		    function merge(a, low, mid, high) {
+		        var b = new Array(high + 1 - low),
+		            h,
+		            i,
+		            j = mid + 1,
+		            k,
+		            h = low,
+		            i = 0;
+		        while (h <= mid && j <= high) {
+		            if (a[h] <= a[j]) {
+		                b[i] = a[h];
+		                h++;
+		            } else {
+		                b[i] = a[j];
+		                j++;
+		            }
+		            i++;
+		        }
+		        if (h > mid) {
+		            for (k = j; k <= high; k++) {
+		                b[i] = a[k];
+		                i++;
+		            }
+		        } else {
+		            for (k = h; k <= mid; k++) {
+		                b[i] = a[k];
+		                i++;
+		            }
+		        }
+		        for (k = 0; k <= high - low; k++) {
+		            a[k + low] = b[k];
+		        }
+		        return a;
+		    }
+		    //TO DO need to improve 
+		    function mergeSort(A) {
+		        function merge_sort(a, low, high) {
+		            if (low < high) {
+		                var mid = Math.floor((low + high) / 2);
+		                merge_sort(a, low, mid);
+		                merge_sort(a, mid + 1, high);
+		                merge(a, low, mid, high);
+		            }
+		        }
+		        var n = A.length;
+		        merge_sort(A, 0, n - 1);
+		        return A;
+		    }
+
+		    function compareNumeric(a, b) {
+		        if (a > b) return 1;
+		        if (a < b) return -1;
+		    }
+
+		    function binarySearch(sortedArr, number, min, max) {
+		        var mid = parseInt(min + ((max - min) / 2));
+		        if (max <= min) {
+		            return "Number out of this array";
+		        }
+		        if (sortedArr[mid] == number) {
+		            return mid;
+		        }
+		        if (sortedArr[mid] > number) {
+		            return binarySearch(sortedArr, number, min, mid);
+		        }
+		        if (sortedArr[mid] < number) {
+		            return binarySearch(sortedArr, number, mid + 1, max);
+		        }
+		    }
+		    return {
+		        constantRandomArr: constantRandomArr,
+		        array: arrayConst,
+		        sortBubble: sortBubble,
+		        sortChoice: sortChoice,
+		        sortInsert: sortInsert,
+		        merge: merge,
+		        mergeSort: mergeSort,
+		        compareNumeric: compareNumeric,
+		        binarySearch: binarySearch
+		    }
+		}());
+		// binary search test
+		var number = 12;
+		for (var i = 0; i < 100; i++) {
+		    var constantRandomArr = App.utils.arrayRandom(50000, -50000, 50000);
+		    App.sortAlgorithms.mergeSort(constantRandomArr);
+		    console.log(constantRandomArr);
+		    search = App.sortAlgorithms.binarySearch(constantRandomArr, number, 0, constantRandomArr.length);
+		    console.log(number, "===>", search);
+		}
+	</script>
+</body>
+</html>

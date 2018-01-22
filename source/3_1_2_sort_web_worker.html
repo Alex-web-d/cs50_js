@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+	<script>
+		window.addEventListener("load", init);
+		function init(){
+			var workerArr = [],
+					i = 0;
+			for (i; i < 4; i++) {  // TO DO  need calc number of files if them more than one
+				workerArr[i] = new Worker("./web_workers/web_worker_test.js");
+				// for more then one file
+				// workerArr[i] = new Worker("web_worker_test" + i + ".js");
+			}
+			for (i = 0; i < workerArr.length; i++) {
+				workerArr[i].addEventListener("message", function(e){
+					console.log(e.data)
+				}, false);
+				workerArr[i].postMessage("");
+			}
+		}
+	</script>
+</body>
+</html>
