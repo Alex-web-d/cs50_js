@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP.git"
+    "url": "git+https://github.com/ua-alexander/cs50.git"
   },
   "keywords": [
     "OOP",
@@ -21,7 +21,7 @@
   "author": "AstonJack",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP/issues"
+    "url": "https://github.com/ua-alexander/cs50/issues"
   },
-  "homepage": "https://github.com/AstonJack/D-projects-encryptionAlgorithmsOOP#readme"
+  "homepage": "https://github.com/ua-alexander/cs50#readme"
 }

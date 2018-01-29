@@ -224,3 +224,5 @@ App.sortAlgorithms = (function() {
     }
 }());
 var a =75;
+console.log("a");
+console.log("b");
